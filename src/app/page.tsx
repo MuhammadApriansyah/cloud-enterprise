@@ -1,4 +1,6 @@
+import Navbar from "@/components/Navbar";
 import Services from "@/components/Services";
+import Architecture from "@/components/Architecture";
 import Link from "next/link";
 
 export default function Home() {

@@ -1,26 +1,43 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+import { createSession } from "../actions";
 
 export default function LoginPage() {
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
+  console.log("Token yang dicoba:", token);
+
+  // Perhatikan kata kunci 'async' di sini
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulasi pemanggilan API ke backend (Supabase)
-    // Di fase berikutnya, kita akan menghubungkan ini ke tabel 'access_tokens'
-    console.log("Validating token:", token);
-    
-    // Simulasi sukses untuk pengembangan UI
-    setTimeout(() => {
+    try {
+      // Sekarang 'await' di bawah ini sah karena berada dalam fungsi 'async'
+      const { data, error } = await supabase
+        .from('access_tokens')
+        .select('*')
+        .eq('token_hash', token)
+        .eq('is_active', true)
+        .single();
+
+      if (error || !data) {
+        alert("Token tidak valid atau sudah kedaluwarsa.");
+        setLoading(false);
+        return;
+      }
+
+      // Memanggil Server Action untuk membuat cookie aman
+        console.log("Login sukses, data:", data);
+        await createSession(token);
+      
+    } catch (err) {
+      console.error("Login Error:", err);
       setLoading(false);
-      router.push("/dashboard"); 
-    }, 1500);
+    }
   };
 
   return (
