@@ -1,3 +1,4 @@
+import Services from "@/components/Services";
 import Link from "next/link";
 
 export default function Home() {
@@ -21,11 +22,11 @@ export default function Home() {
       </section>
 
       <section id="services" className="min-h-screen flex items-center justify-center bg-white">
-        <h2 className="text-3xl font-bold">Services Section Blueprint</h2>
+        <Services />
       </section>
 
       <section id="architecture" className="min-h-screen flex items-center justify-center bg-slate-100">
-        <h2 className="text-3xl font-bold">Architecture Section Blueprint</h2>
+        <Architecture />
       </section>
     </div>
   );
