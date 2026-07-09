@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { createSession } from "../actions";
-import AuroraCard from "@/components/AuroraCard";
+import OrganicEnvironment from "@/components/OrganicEnvironment";
+import InteractiveSurface from "@/components/InteractiveSurface";
 import { motion } from "framer-motion";
 
 export default function RootAccessPage() {
@@ -15,28 +16,33 @@ export default function RootAccessPage() {
     e.preventDefault();
     setIsLoading(true);
     const formData = new FormData(e.currentTarget);
-    await createSession(formData.get("token") as string, "ADMIN"); 
+    await createSession(formData.get("token") as string, "ADMIN");
   };
 
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#020202] flex items-center justify-center p-6 selection:bg-red-500/30 selection:text-white relative overflow-hidden font-sans">
-      
-      {/* Crimson Alert Background */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-red-900/10 rounded-full blur-[150px] pointer-events-none animate-[pulse_6s_infinite]"></div>
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none opacity-20"></div>
+    <div className="min-h-screen flex items-center justify-center p-6 selection:bg-red-500/30 selection:text-white relative overflow-hidden font-sans">
+
+      {/* Tetap menggunakan Organic Environment untuk konsistensi spasial */}
+      <OrganicEnvironment />
+
+      {/* Crimson Alert Ambient khusus halaman root */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-red-900/10 rounded-full blur-[150px] pointer-events-none animate-[pulse_6s_infinite] z-0"></div>
 
       <div className="relative z-10 w-full max-w-[420px]">
-        <AuroraCard glowColor="rgba(239, 68, 68, 0.2)" className="p-10 border-red-500/10">
-          
+        {/* Override warna senter kursor menggunakan warna semantik error (Red) */}
+        <InteractiveSurface className="p-10 border-red-500/10" glowOverride="rgba(239, 68, 68, 0.15)">
+
           <div className="text-center mb-10 relative z-20">
-            <motion.div 
+            <motion.div
               className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-red-500/5 border border-red-500/20 mb-6 shadow-[0_0_30px_rgba(239,68,68,0.2)]"
               animate={{ rotate: [0, 5, -5, 0] }}
               transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
             >
-              <svg className="w-7 h-7 text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+              <svg className="w-7 h-7 text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
             </motion.div>
             <h1 className="text-3xl font-black text-white tracking-tighter mb-2">
               ROOT <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-700">ACCESS</span>
@@ -78,7 +84,7 @@ export default function RootAccessPage() {
               </span>
             </button>
           </form>
-        </AuroraCard>
+        </InteractiveSurface>
       </div>
     </div>
   );

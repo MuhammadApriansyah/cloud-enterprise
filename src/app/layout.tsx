@@ -3,7 +3,9 @@ import { Inter } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
 import ClickEffect from "@/components/ClickEffect";
-import PremiumBackground from "@/components/PremiumBackground";
+import OrganicEnvironment from "@/components/OrganicEnvironment";
+import SmoothScroll from "@/components/SmoothScroll";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +24,7 @@ export default function RootLayout({
       <body className={`${inter.className} bg-[#030303] text-slate-300 antialiased selection:bg-indigo-500/30 selection:text-white relative`}>
         
         {/* Layer Paling Bawah: Noise & Grid */}
-        <PremiumBackground />
+        <OrganicEnvironment />
         
         {/* Layer Interaksi */}
         <ClickEffect /> 
@@ -30,7 +32,9 @@ export default function RootLayout({
         {/* Layer Navigasi & Konten Berada di Atas (z-index relatif) */}
         <div className="relative z-10">
         <Navbar />
+         <SmoothScroll>
           {children}
+         </SmoothScroll>
         </div>
         
       </body>
