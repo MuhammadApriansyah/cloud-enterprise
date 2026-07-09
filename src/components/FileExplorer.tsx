@@ -56,7 +56,9 @@ export default function FileExplorer() {
         const formattedFiles = data
           .filter((file) => file.name !== '.emptyFolderPlaceholder')
           .map((file) => ({
-            id: file.id,
+            // PERBAIKAN: Menggunakan Nullish Coalescing (??) dengan file.name sebagai fallback.
+            // Memaksa nilai kembalian menjadi 'string' mutlak sesuai antarmuka FileItem.
+            id: file.id ?? file.name, 
             name: file.name,
             type: file.metadata?.mimetype?.split('/')[0] || 'document',
             size: formatBytes(file.metadata?.size || 0),
