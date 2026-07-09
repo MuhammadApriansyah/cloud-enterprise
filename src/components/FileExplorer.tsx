@@ -60,7 +60,7 @@ export default function FileExplorer() {
             name: file.name,
             type: file.metadata?.mimetype?.split('/')[0] || 'document',
             size: formatBytes(file.metadata?.size || 0),
-            updatedAt: formatToWIB(file.created_at),
+            updatedAt: formatToWIB(file.created_at || new Date().toISOString()),
           }));
         setFiles(formattedFiles);
       }
