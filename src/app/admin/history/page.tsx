@@ -1,5 +1,5 @@
 // src/app/admin/page.tsx
-import { getPendingRequests } from "./actions";
+import { getPendingRequests } from "@/app/actions";
 import ActionButtons from "./ActionButtons";
 import { supabase } from "@/lib/supabase";
 
