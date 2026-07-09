@@ -1,49 +1,111 @@
-import Link from "next/link";
+"use client";
+
+import { motion } from "framer-motion";
+import AetherBackground from "@/components/AetherBackground";
 import Services from "@/components/Services";
 import Architecture from "@/components/Architecture";
+import About from "@/components/About";
+
+// Refaktorisasi v5.1: Menggunakan whileInView untuk menjamin elemen 100% fokus
+function TransformSection({ children, id }: { children: React.ReactNode, id?: string }) {
+  return (
+    <motion.div
+      id={id}
+      initial={{ opacity: 0, scale: 0.95, y: 40, filter: "blur(10px)" }}
+      whileInView={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: false, amount: 0.15 }} // Animasi terpicu saat 15% elemen terlihat
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="relative w-full min-h-[100vh] flex flex-col justify-center origin-center py-10 will-change-transform transform-gpu"
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export default function Home() {
+  const handleTransitionScroll = () => {
+    const targetElement = document.getElementById("services-section");
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <div className="flex flex-col min-h-screen bg-slate-900 selection:bg-indigo-500 selection:text-white overflow-x-hidden">
+    <div className="relative bg-[#070a13] text-white overflow-x-hidden min-h-screen font-sans select-none selection:bg-blue-500/20">
       
-      {/* HERO SECTION WITH DYNAMIC GRADIENT AND GLOW */}
-      <section id="hero" className="relative min-h-screen flex items-center justify-center pt-24 overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950 via-slate-950 to-black">
+      <AetherBackground />
+
+      <div className="relative z-10 w-full flex flex-col items-center">
         
-        {/* Animated Ambient Light Blobs */}
-        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-indigo-500/10 rounded-full filter blur-[120px] animate-[pulse_6s_infinite]"></div>
-          <div className="absolute bottom-[10%] right-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full filter blur-[100px] animate-[pulse_8s_infinite]"></div>
+        {/* HERO SECTION */}
+        <TransformSection>
+          <section className="h-screen w-full flex flex-col items-center justify-center text-center px-6 relative">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              className="max-w-5xl space-y-8 transform-gpu"
+            >
+              <div className="inline-flex items-center space-x-3 bg-white/[0.02] border border-white/[0.06] rounded-full px-5 py-2 backdrop-blur-xl">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">
+                  Privacy by Default
+                </span>
+              </div>
+
+              <h1 className="text-7xl md:text-9xl font-black tracking-tighter leading-[0.85] text-white">
+                Built for <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-teal-400">Trust.</span>
+              </h1>
+
+              <p className="max-w-2xl text-base md:text-xl text-slate-400 tracking-[0.3em] uppercase font-light mx-auto leading-relaxed">
+                Safe. Simple. Reliable.
+              </p>
+
+              <div className="pt-10">
+                <motion.button
+                  onClick={handleTransitionScroll}
+                  whileHover={{ scale: 1.03, backgroundColor: "rgba(255,255,255,0.95)" }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  className="px-14 py-5 bg-white text-[#070a13] font-bold text-xs uppercase tracking-[0.3em] rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-all"
+                >
+                  Explore Our Architecture
+                </motion.button>
+              </div>
+            </motion.div>
+
+            <div className="absolute bottom-16 flex flex-col items-center opacity-30">
+              <motion.div
+                animate={{ height: [0, 50, 0], opacity: [0.2, 1, 0.2] }}
+                transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+                className="w-[1.5px] bg-gradient-to-b from-blue-400 to-transparent"
+              />
+            </div>
+          </section>
+        </TransformSection>
+
+        {/* ECOSYSTEM SECTIONS */}
+        <div className="w-full max-w-7xl px-6 pb-32">
+          <TransformSection id="services-section">
+            <div className="bg-[#0f1422]/40 backdrop-blur-3xl border border-white/[0.04] rounded-[3.5rem] p-4 shadow-[0_30px_60px_rgba(0,0,0,0.4)]">
+              <Services />
+            </div>
+          </TransformSection>
+
+          <TransformSection id="architecture-section">
+            <div className="bg-[#0f1422]/40 backdrop-blur-3xl border border-white/[0.04] rounded-[3.5rem] p-4 shadow-[0_30px_60px_rgba(0,0,0,0.4)]">
+              <Architecture />
+            </div>
+          </TransformSection>
+
+          <TransformSection id="about-section">
+            <div className="bg-[#0f1422]/40 backdrop-blur-3xl border border-white/[0.04] rounded-[3.5rem] p-4 shadow-[0_30px_60px_rgba(0,0,0,0.4)]">
+              <About />
+            </div>
+          </TransformSection>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          {/* Badge Alert Interaktif */}
-          <div className="inline-flex items-center space-x-2 bg-indigo-500/10 border border-indigo-500/30 rounded-full px-4 py-1.5 text-xs font-medium text-indigo-300 backdrop-blur-md hover:border-indigo-400/50 transition-all duration-300 cursor-pointer group">
-            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
-            <span className="group-hover:translate-x-0.5 transition-transform duration-300">Next-Gen Storage Architecture v3.2 Active</span>
-          </div>
-
-          <h1 className="text-5xl md:text-8xl font-black text-white tracking-tight leading-none">
-            Secure Storage <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 drop-shadow-sm">
-              Without Constraints
-            </span>
-          </h1>
-          
-          <p className="max-w-2xl text-lg md:text-xl text-slate-400 mx-auto leading-relaxed">
-            Arsitektur penyimpanan hibrida cerdas skala besar. Kecepatan komputasi edge lokal berpadu sempurna dengan kapasitas tak terbatas penyimpanan awan terdistribusi.
-          </p>
-          
-          {/* Interactive CTA Buttons - Minimalist Ultra-Premium */}
-          <div className="flex justify-center items-center pt-4 animate-[slideUp_1s_ease-out_0.5s_both]">
-            <Link href="#architecture" className="px-10 py-4 text-sm uppercase tracking-widest font-bold rounded-full text-white bg-white/[0.05] border border-white/[0.1] hover:bg-white/[0.1] hover:border-indigo-500/50 hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-500 text-center backdrop-blur-md">
-              Explore Architecture
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <Services />
-      <Architecture />
+      </div>
     </div>
   );
 }

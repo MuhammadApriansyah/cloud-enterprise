@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
 import Navbar from "@/components/Navbar";
+import "./globals.css";
 import ClickEffect from "@/components/ClickEffect";
 import PremiumBackground from "@/components/PremiumBackground";
 
@@ -29,7 +29,7 @@ export default function RootLayout({
         
         {/* Layer Navigasi & Konten Berada di Atas (z-index relatif) */}
         <div className="relative z-10">
-          <Navbar />
+        <Navbar />
           {children}
         </div>
         

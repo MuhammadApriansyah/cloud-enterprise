@@ -1,97 +1,156 @@
 "use client";
 
-import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const [showNavbar, setShowNavbar] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  
+  const isHome = pathname === "/";
+  // Deteksi rute di mana Navbar HARUS musnah total
+  const isDashboardOrAdmin = pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname === "/auth/root-access";
+  
+  const navLinks = ["Services", "Architecture", "About"];
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  if (pathname?.startsWith("/dashboard")) {
-    return null;
-  }
-
-  const navigateToSection = (sectionId: string) => {
-    setIsMobileMenuOpen(false);
-    if (window.location.pathname !== "/") {
-      window.location.href = `/#${sectionId}`;
-    } else {
-      document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+    // 1. Jika di Dashboard/Admin, matikan Navbar
+    if (isDashboardOrAdmin) {
+      setShowNavbar(false);
+      return;
     }
-  };
+
+    // 2. Jika di halaman publik (Login/Register), paksa tampilkan ikon Home
+    if (!isHome) {
+      setShowNavbar(true);
+      return;
+    }
+
+    // 3. Logika gulir khusus Landing Page
+    const handleScroll = () => {
+      const currentScroll = window.scrollY;
+      setScrollY(currentScroll);
+      setShowNavbar(currentScroll > 300);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isHome, isDashboardOrAdmin]);
+
+  // Tutup menu mobile otomatis jika state berubah
+  useEffect(() => {
+    if (!showNavbar || !isHome) {
+      setMobileMenuOpen(false);
+    }
+  }, [pathname, showNavbar, isHome]);
+
+  // Eksekusi Pemusnahan: Jangan render apapun di Dashboard & Admin
+  if (isDashboardOrAdmin) return null;
 
   return (
-    <nav 
-      className={`fixed top-0 w-full z-[100] transition-all duration-500 border-b ${
-        /* Jika digulir ATAU menu seluler terbuka, nyalakan KACA UTAMA yang membungkus seluruh elemen */
-        isScrolled || isMobileMenuOpen
-          ? "bg-[#030303]/40 backdrop-blur-3xl border-white/[0.05] shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]" 
-          : "bg-transparent border-transparent"
-      }`}
-    >
-      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 transition-all duration-500 ${isScrolled || isMobileMenuOpen ? "py-3" : "py-5"}`}>
-        <div className="flex justify-between items-center">
-          
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-blue-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-            </div>
-            <span className="text-xl font-medium text-slate-200 tracking-tight drop-shadow-md">
-              Nexa<span className="font-black text-white">Cloud</span>
-            </span>
-          </Link>
+    <>
+      <AnimatePresence>
+        {showNavbar && (
+          <motion.header
+            initial={{ y: -80, opacity: 0 }}
+            animate={{ y: 24, opacity: 1 }}
+            exit={{ y: -80, opacity: 0 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-x-0 top-0 z-[60] flex justify-center pointer-events-none px-4 md:px-6 transform-gpu"
+          >
+            {isHome ? (
+              /* NAVBAR UTAMA (Landing Page) */
+              <div className="bg-[#0f1422]/70 backdrop-blur-3xl border border-white/[0.06] rounded-full px-6 md:px-8 py-3 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)] pointer-events-auto w-full max-w-fit gap-4 md:gap-10">
+                
+                <AnimatePresence mode="wait">
+                  {scrollY > 800 && (
+                    <motion.div
+                      initial={{ width: 0, opacity: 0 }}
+                      animate={{ width: "auto", opacity: 1 }}
+                      exit={{ width: 0, opacity: 0 }}
+                      className="overflow-hidden whitespace-nowrap border-r border-white/10 pr-4 md:pr-6"
+                    >
+                      <span className="font-black text-sm tracking-tighter text-white">NexaCloud</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-          <div className="hidden md:flex items-center space-x-1 border border-white/[0.05] bg-white/[0.02] rounded-full px-2 py-1 backdrop-blur-xl shadow-inner">
-            <button onClick={() => navigateToSection("services")} className="px-5 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/[0.08] rounded-full transition-all duration-300">Services</button>
-            <button onClick={() => navigateToSection("architecture")} className="px-5 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/[0.08] rounded-full transition-all duration-300">Architecture</button>
-          </div>
+                <nav className="hidden md:flex items-center space-x-8">
+                  {navLinks.map((item) => (
+                    <a 
+                      key={item} 
+                      href={`#${item.toLowerCase()}-section`} 
+                      className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 hover:text-white transition-colors duration-300"
+                    >
+                      {item}
+                    </a>
+                  ))}
+                </nav>
 
-          <div className="hidden md:flex">
-            <Link href="/auth/login" className="group relative px-6 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-full text-sm font-bold text-white hover:bg-white/[0.1] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all duration-300 overflow-hidden">
-              <span className="relative z-10 flex items-center space-x-2">
-                <span>Access</span>
-                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-              </span>
-            </Link>
-          </div>
+                <div className="flex items-center gap-3">
+                  <Link 
+                    href="/auth/login" 
+                    className="bg-white text-[#070a13] px-5 md:px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all duration-300 shadow-md"
+                  >
+                    Try
+                  </Link>
 
-          <div className="md:hidden flex items-center">
-            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.05] transition-colors focus:outline-none">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {isMobileMenuOpen ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />}
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
+                  <button 
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className="md:hidden flex flex-col justify-center items-center w-8 h-8 rounded-full bg-white/[0.05] border border-white/[0.1] active:scale-95 transition-transform"
+                  >
+                    <span className={`block w-3 h-[1.5px] bg-white transition-transform duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-[1.5px]' : '-translate-y-0.5'}`} />
+                    <span className={`block w-3 h-[1.5px] bg-white transition-transform duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-[1.5px]' : 'translate-y-0.5'}`} />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* NAVBAR LOGIN / REGISTER (Ikon Home Mungil) */
+              <Link 
+                href="/"
+                className="w-12 h-12 bg-[#0f1422]/60 backdrop-blur-3xl border border-white/[0.06] rounded-full flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] pointer-events-auto hover:bg-white/[0.05] hover:scale-110 active:scale-95 transition-all duration-300 group"
+              >
+                <svg className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+              </Link>
+            )}
+          </motion.header>
+        )}
+      </AnimatePresence>
 
-      {/* REVISI: Kontainer Seluler Transparan (Menyatu dengan Navbar) */}
-      <div 
-        className={`md:hidden w-full transition-all duration-500 ease-in-out overflow-hidden ${
-          isMobileMenuOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
-        }`}
-      >
-        {/* Tidak ada lagi background terpisah di sini, murni tembus pandang mengikuti induk nav */}
-        <div className="flex flex-col space-y-3 px-4 pb-6 pt-2">
-          <button onClick={() => navigateToSection("services")} className="text-left px-5 py-3.5 text-slate-200 font-medium hover:bg-white/[0.08] rounded-2xl transition-colors border border-transparent hover:border-white/[0.05]">Services</button>
-          <button onClick={() => navigateToSection("architecture")} className="text-left px-5 py-3.5 text-slate-200 font-medium hover:bg-white/[0.08] rounded-2xl transition-colors border border-transparent hover:border-white/[0.05]">Architecture</button>
-          
-          <Link href="/auth/login" className="mt-4 px-5 py-4 bg-white/[0.08] border border-white/[0.15] rounded-2xl text-white font-bold text-center hover:bg-white/[0.15] transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-            Login
-          </Link>
-        </div>
-      </div>
-    </nav>
+      {/* Menu Overlay Mobile */}
+      <AnimatePresence>
+        {mobileMenuOpen && isHome && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-x-4 top-24 z-[55] bg-[#0f1422]/95 backdrop-blur-3xl border border-white/[0.08] rounded-3xl p-6 flex flex-col space-y-6 md:hidden pointer-events-auto shadow-2xl"
+          >
+            {navLinks.map((item, i) => (
+              <motion.a
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05 }}
+                key={item}
+                href={`#${item.toLowerCase()}-section`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-xs font-bold uppercase tracking-[0.3em] text-slate-300 hover:text-white transition-colors border-b border-white/[0.05] pb-4"
+              >
+                {item}
+              </motion.a>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
