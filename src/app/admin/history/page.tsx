@@ -1,6 +1,6 @@
 // src/app/admin/page.tsx
 import { getPendingRequests } from "@/app/actions";
-import ActionButtons from "./ActionButtons";
+import ActionButtons from "@/app/admin/ActionButtons";
 import { supabase } from "@/lib/supabase";
 
 export default async function HistoryPage() {
