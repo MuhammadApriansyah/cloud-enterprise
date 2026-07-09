@@ -44,7 +44,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         wheelMultiplier: 1,
       }}
     >
-      {children}
+      {children as any}
     </ReactLenis>
   );
 }
