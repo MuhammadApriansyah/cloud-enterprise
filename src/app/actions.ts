@@ -1,5 +1,6 @@
 "use server";
 
+import { supabase } from "@/lib/supabase";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -18,5 +19,25 @@ export async function createSession(token: string) {
   
   console.log("Cookie berhasil diset untuk session:", token);
   redirect("/dashboard");
+}
+
+export async function getPendingRequests() {
+  try {
+    // Logika: Mengambil data dari tabel 'requests' dengan status 'pending'
+    const { data, error } = await supabase
+      .from("requests") // Sesuaikan dengan nama tabel di database Anda
+      .select("*")
+      .eq("status", "pending");
+
+    if (error) {
+      console.error("Error fetching pending requests:", error);
+      return []; // Return array kosong jika error
+    }
+
+    return data || [];
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    return [];
+  }
 }
 
