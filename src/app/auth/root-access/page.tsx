@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { createSession } from "../actions";
-import OrganicEnvironment from "@/components/OrganicEnvironment";
-import InteractiveSurface from "@/components/InteractiveSurface";
+import OrganicEnvironment from "@/components/ui/OrganicEnvironment";
+import InteractiveSurface from "@/components/ui/InteractiveSurface";
 import { motion } from "framer-motion";
 
 export default function RootAccessPage() {

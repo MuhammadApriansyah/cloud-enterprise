@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { requestAccess } from "../actions";
-import OrganicEnvironment from "@/components/OrganicEnvironment";
-import InteractiveSurface from "@/components/InteractiveSurface";
+import OrganicEnvironment from "@/components/ui/OrganicEnvironment";
+import InteractiveSurface from "@/components/ui/InteractiveSurface";
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
