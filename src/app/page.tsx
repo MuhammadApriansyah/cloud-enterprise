@@ -1,101 +1,51 @@
 "use client";
 
 import { motion } from "framer-motion";
-import OrganicEnvironment from "@/components/OrganicEnvironment";
-import Services from "@/components/Services";
-import Architecture from "@/components/Architecture";
-import About from "@/components/About";
+import Link from "next/link";
+// PERBAIKAN 1: OrganicEnvironment DIHAPUS dari sini untuk mencegah WebGL ganda (DRY Principle)
+import Architecture from "@/components/sections/Architecture";
+import Services from "@/components/sections/Services";
+import About from "@/components/sections/About";
 
-// Wrapper spasial untuk transisi masuk (masuk dari bawah + blur resolve)
-function TransformSection({ children, id }: { children: React.ReactNode, id?: string }) {
+export default function LandingPage() {
   return (
-    <motion.section
-      id={id}
-      initial={{ opacity: 0, scale: 0.98, y: 30, filter: "blur(8px)" }}
-      whileInView={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once: true, amount: 0.1 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className="relative w-full min-h-screen flex flex-col justify-center origin-center py-12 will-change-transform transform-gpu"
-    >
-      {children}
-    </motion.section>
-  );
-}
-
-export default function Home() {
-  const handleTransitionScroll = () => {
-    const targetElement = document.getElementById("services-section");
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  return (
-    <div className="relative bg-transparent text-white overflow-x-hidden min-h-screen font-sans select-none selection:bg-cyan-500/20">
-      <OrganicEnvironment />
-
-      <div className="relative z-10 w-full flex flex-col items-center">
-        
-        {/* HERO SECTION */}
-        <section className="h-screen w-full flex flex-col items-center justify-center text-center px-6 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-5xl space-y-8 transform-gpu"
-          >
-            <div className="inline-flex items-center space-x-3 bg-white/[0.02] border border-white/[0.06] rounded-full px-5 py-2 backdrop-blur-xl">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">
-                Privacy by Default
-              </span>
-            </div>
-
-            <h1 className="text-7xl md:text-9xl font-black tracking-tighter leading-[0.85] text-white">
-              Built for <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500">Trust.</span>
-            </h1>
-
-            <p className="max-w-2xl text-base md:text-xl text-slate-400 tracking-[0.3em] uppercase font-light mx-auto leading-relaxed">
-              Safe. Simple. Reliable.
-            </p>
-
-            <div className="pt-10">
-              <motion.button
-                onClick={handleTransitionScroll}
-                whileHover={{ scale: 1.03, backgroundColor: "rgba(255,255,255,0.95)" }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                className="px-14 py-5 bg-white text-[#050B14] font-bold text-xs uppercase tracking-[0.3em] rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-all"
-              >
-                Explore Our Architecture
-              </motion.button>
-            </div>
+    <div className="bg-transparent text-white selection:bg-cyan-500/30 selection:text-white relative font-sans">
+    {/* PERBAIKAN 2: Hapus bg-[#020202] menjadi bg-transparent agar kanvas dari layout.tsx terlihat. 
+        Hapus overflow-hidden agar elemen tidak terpotong kasar. */}
+      {/* --- HERO SECTION --- */}
+      <section className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6">
+        <div className="text-center max-w-4xl mx-auto mt-20">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center space-x-2 mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-cyan-500/80">Privacy by Default</span>
           </motion.div>
 
-          <div className="absolute bottom-16 flex flex-col items-center opacity-30 pointer-events-none">
-            <motion.div
-              animate={{ height: [0, 50, 0], opacity: [0.2, 1, 0.2] }}
-              transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-              className="w-[1.5px] bg-gradient-to-b from-cyan-400 to-transparent"
-            />
-          </div>
-        </section>
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6">
+            Built for <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Trust.</span>
+          </motion.h1>
 
-        {/* ECOSYSTEM SECTIONS (Tanpa div pembungkus yang redundan) */}
-        <div className="w-full max-w-7xl px-6 pb-32">
-          <TransformSection id="services-section">
-            <Services />
-          </TransformSection>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="flex justify-center space-x-3 text-xs md:text-sm text-slate-500 uppercase tracking-[0.3em] font-semibold mb-12">
+            <span>Safe.</span><span className="text-slate-700">•</span><span>Simple.</span><span className="text-slate-700">•</span><span>Reliable.</span>
+          </motion.div>
 
-          <TransformSection id="architecture-section">
-            <Architecture />
-          </TransformSection>
-
-          <TransformSection id="about-section">
-            <About />
-          </TransformSection>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+            <Link href="#services-section">
+              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="relative group bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-500/30 text-white font-bold py-4 px-8 rounded-full transition-all duration-500 overflow-hidden backdrop-blur-sm">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(6,182,212,0.2),transparent)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <span className="relative z-10 text-[11px] uppercase tracking-[0.2em]">Explore Architecture</span>
+              </motion.button>
+            </Link>
+          </motion.div>
         </div>
+      </section>
+
+      {/* --- MODULAR COMPONENTS --- */}
+      <div className="relative z-10">
+        <Services />
+        <Architecture />
+        <About />
       </div>
+
     </div>
   );
 }

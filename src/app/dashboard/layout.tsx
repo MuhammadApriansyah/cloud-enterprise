@@ -1,16 +1,32 @@
-import UserSidebar from "./Sidebar";
-import OrganicEnvironment from "@/components/OrganicEnvironment";
+import Sidebar from "@/components/layout/Sidebar";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex min-h-screen text-white relative overflow-hidden font-sans selection:bg-cyan-500/30">
-      {/* Fondasi Spasial Enterprise */}
-      <OrganicEnvironment />
+    // Menggunakan min-h-screen dan bg-transparent agar tetap selaras dengan desain organik keseluruhan aplikasi
+    <div className="min-h-screen w-full bg-transparent text-white font-sans selection:bg-indigo-500/30">
       
-      <UserSidebar />
-      <main className="flex-1 w-full relative z-10">
-        {children}
+      {/* 
+        Sidebar kini bersifat floating dan fixed (diatur di dalam komponen Sidebar).
+        Ia melayang di atas konten utama, sehingga tidak memerlukan pengaturan tata letak 
+        khusus pada layout ini untuk berbagi ruang horizontal.
+      */}
+      <Sidebar />
+      
+      {/* 
+        Main content memenuhi lebar penuh (w-full). 
+        Padding diberikan untuk memastikan konten utama memiliki ruang napas 
+        dan tidak tertutup oleh navigasi floating di sisi kiri bawah.
+      */}
+      <main className="w-full h-screen overflow-y-auto p-4 md:p-8 transition-all duration-300">
+        <div className="max-w-[1600px] mx-auto h-full">
+          {children}
+        </div>
       </main>
+
     </div>
   );
 }

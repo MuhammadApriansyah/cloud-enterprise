@@ -1,25 +1,23 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { verifySession } from './middleware/auth';
 
-// PERBAIKAN: Ubah nama ekspor dari 'middleware' menjadi 'proxy'
+// PERBAIKAN 1: Arahkan impor ke folder 'server' yang baru kita buat (menggantikan 'middleware')
+import { verifySession } from './server/auth';
+
+// PERBAIKAN 2: Ubah nama fungsi dari 'middleware' menjadi 'proxy' untuk membungkam peringatan Turbopack
 export async function proxy(request: NextRequest) {
-  // Panggil mesin verifikasi tersinkronisasi
   const authResult = await verifySession(request);
 
-  // Jika hasil verifikasi memutuskan user tidak valid untuk rute tersebut
   if (!authResult.isValid && authResult.redirectTo) {
     const response = NextResponse.redirect(new URL(authResult.redirectTo, request.url));
-    
-    // Auto-Purge: Hancurkan cookie jika diarahkan kembali ke login (berarti token cacat)
+
     if (authResult.redirectTo === '/auth/login') {
       response.cookies.delete('session_token');
     }
-    
+
     return response;
   }
 
-  // Loloskan
   return NextResponse.next();
 }
 

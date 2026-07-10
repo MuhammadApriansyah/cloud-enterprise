@@ -9,20 +9,39 @@ import { motion } from "framer-motion";
 export default function RootAccessPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => setMounted(true), []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage(null); // Bersihkan error sebelumnya saat mencoba lagi
+    
     const formData = new FormData(e.currentTarget);
-    await createSession(formData.get("token") as string, "ADMIN");
+    const token = formData.get("token") as string;
+
+    try {
+      // Mengirimkan token ke Server Action dengan role ADMIN
+      const result = await createSession(token, "ADMIN");
+      
+      // Jika server mengembalikan objek error (token salah/invalid)
+      if (result && result.error) {
+        setErrorMessage(result.error);
+        setIsLoading(false); // Hentikan animasi loading agar tidak stuck
+      }
+      // Jika berhasil, Server Action `redirect()` akan memicu perpindahan rute secara otomatis.
+    } catch (err) {
+      // Penanganan error jaringan atau server crash
+      setErrorMessage("Koneksi ditolak oleh Mainframe.");
+      setIsLoading(false); // Hentikan animasi loading
+    }
   };
 
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 selection:bg-red-500/30 selection:text-white relative overflow-hidden font-sans">
+    <div className="min-h-screen flex items-center justify-center p-6 selection:bg-red-500/30 selection:text-white relative overflow-hidden font-sans bg-[#020202]">
 
       {/* Tetap menggunakan Organic Environment untuk konsistensi spasial */}
       <OrganicEnvironment />
@@ -51,6 +70,20 @@ export default function RootAccessPage() {
               Restricted Subsystem
             </p>
           </div>
+
+          {/* Panel Notifikasi Error (Hanya muncul jika ada error) */}
+          {errorMessage && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: -10 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="mb-6 px-4 py-3 bg-red-950/40 border border-red-500/50 rounded-xl flex items-center space-x-3 shadow-inner relative z-20"
+            >
+              <svg className="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <p className="text-[11px] font-bold text-red-400 uppercase tracking-widest">{errorMessage}</p>
+            </motion.div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6 relative z-20">
             <div className="space-y-2 group">
